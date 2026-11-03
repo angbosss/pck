@@ -162,7 +162,6 @@ input[readonly],textarea[readonly]{background:#f9fafb; color:var(--ink2)}
           <div class="addrbox" id="addrBox"></div>
           <div class="tools"><button type="button" class="btn sm quiet" id="btnAddrClose">닫기</button></div>
         </div>
-        <input type="text" id="addrDetail" name="addrDetail" placeholder="상세 (예: 제2주차장, 피트 빌딩 2층)" style="margin-top:8px">
       </div>
 
       <div class="f">
@@ -354,9 +353,14 @@ input[readonly],textarea[readonly]{background:#f9fafb; color:var(--ink2)}
       <span class="t">요청서</span>
       <textarea id="preview" readonly></textarea>
       <div class="tools" style="margin-top:10px">
-        <button type="button" class="btn big" id="btnCopy">요청서 복사</button>
+        <button type="button" class="btn big" id="btnSend">요청서 보내기</button>
       </div>
-      <p class="h" id="copyNote">복사된 글 끝의 [자료] 줄은 그대로 두시면 됩니다. 그 줄로 요청서를 다시 불러올 수 있습니다.</p>
+      <p class="h" id="sendNote">누르시면 요청서가 접수함(안세환)으로 바로 들어가고, 아래에 접수번호가 보입니다. 따로 복사해 보내실 필요가 없습니다.</p>
+      <div id="sendResult"></div>
+      <div class="tools" style="margin-top:12px">
+        <button type="button" class="btn sm quiet" id="btnCopy">요청서 복사 (예비)</button>
+      </div>
+      <p class="h" id="copyNote">보내기가 안 될 때 복사해 카톡으로 보내셔도 됩니다. 글 끝의 [자료] 줄은 그대로 두시면 됩니다.</p>
     </div>
 
     <div class="card">
@@ -374,7 +378,11 @@ input[readonly],textarea[readonly]{background:#f9fafb; color:var(--ink2)}
     </div>
   </section>
 
-  <p class="foot">포르쉐 클럽 코리아 · 행사 접수 요청서</p>
+  <p class="foot">포르쉐 클럽 코리아 · 행사 접수 요청서 · <span id="verTag"></span> · <button type="button" class="linkbtn" id="btnChangelog" style="font-size:13px;font-weight:600">변경 내역</button></p>
+  <div class="card" id="changelog" style="display:none">
+    <h2 style="font-size:16px">변경 내역</h2>
+    <ul class="list" id="changelogList" style="font-size:14px;color:var(--ink2)"></ul>
+  </div>
 </main>
 
 <div class="navbar">
@@ -390,6 +398,17 @@ input[readonly],textarea[readonly]{background:#f9fafb; color:var(--ink2)}
 var STEP_NAMES=['행사','인원·마감','받을 것','주최 측·안내문','추가 요청·보내기'];
 var TOTAL=STEP_NAMES.length;
 var KEY='pckEventRequest.v1';
+/* ---- 버전. 페이지를 고칠 때마다 VERSION을 올리고 CHANGELOG 맨 앞에 한 줄 보탠다. 마스터·요청서 시트 '버전로그' 탭에도 같은 줄을 적는다. ---- */
+var VERSION='3.1';
+var CHANGELOG=[
+  ['3.1','2026-11-03','요청서 보내기 버튼 — 누르면 접수함(구글 시트)으로 바로 들어가고 접수번호가 보임. 요청서 복사는 예비로 남김. 페이지에 버전 표시·변경 내역 추가'],
+  ['3.0','2026-11-03','상세 주소 칸 제거(장소명·주소만). 주소 검색은 적은 글을 검색어로 새 창'],
+  ['2.9','2026-11-03','안내 문구를 폼 사용 안내만으로 정리. 머리글·꼬리글 압축, 보내는 곳 안내 제거'],
+  ['2.0','2026-11-03','운영진용 요청서로 전환 — 행사 사실만 묻고 요청서 한 장을 복사해 보내는 구조. 에버랜드(용인) 미리 채우기, 두 번 눌러 확정, 답안 복사·붙여 넣기'],
+  ['1.0','2026-11-03','최초 — 설정 질문지(마스터 블록·설정 탭 값·요청문 출력)']
+];
+/* ---- 접수함 웹앱 주소(Apps Script). 비어 있으면 보내기 버튼이 숨고 복사만 보인다. ---- */
+var INBOX_URL='https://script.google.com/macros/s/AKfycbzqCAvWtXcSKDkFo-y77G4iSPYJlOiu6ZlEU0mcHykmSSL9YqLR8ONqggjgq-glNwoWiw/exec';
 var DAYS=['일','월','화','수','목','금','토'];
 var cur=1;
 
@@ -452,7 +471,7 @@ function derive(s){
   d.providerOn = s.provider==='yes';
   d.provideOptions = d.items.filter(function(x){ return x!=='휴대폰' && x!=='회원번호'; });   // 지침 4번: 제출 탭엔 운영진용 열 없음
   d.provideItems=(Array.isArray(s.provideItems)?s.provideItems:[]).filter(function(x){return d.provideOptions.indexOf(x)>=0});
-  d.place=[one(s.place), [one(s.addr), one(s.addrDetail)].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+  d.place=[one(s.place), one(s.addr)].filter(Boolean).join(', ');
   d.when=(function(){
     if(!s.eventDate) return '';
     var w=fmtD(s.eventDate);
@@ -489,9 +508,12 @@ function buildRequest(s,d){
   } else L.push('주최 측 명단: 넘기지 않음');
   L.push('안내문: '+(s.guide==='yes'?('있음'+(one(s.guideNote)?' — '+one(s.guideNote):'')+' (파일 따로 보냄)'):'없음'));
   if(lines(s.memo).length) L.push('추가 요청: '+lines(s.memo).join(' / '));
-  L.push('');
-  L.push('[자료] '+JSON.stringify({v:1, kind:'pck-event-request', answers:s}));
-  return L.join('\n');
+  var summary=L.join('\n');
+  return summary+'\n\n[자료] '+JSON.stringify(payload_(s, summary));
+}
+/* 접수함으로 보내는 꾸러미 = [자료] 줄과 같은 것. 정리글·버전이 함께 들어간다. */
+function payload_(s, summary){
+  return {v:1, kind:'pck-event-request', version:VERSION, summary:summary, answers:s};
 }
 
 /* ---------- checks ---------- */
@@ -559,6 +581,7 @@ function render(){
   var ck=buildChecks(s,d);
   $('checks').innerHTML=ck.html;
   $('btnCopy').disabled=ck.blocked;
+  if(!sending) $('btnSend').disabled=ck.blocked;
   save();
   return {state:s, derived:d, text:text, blocked:ck.blocked};
 }
@@ -667,7 +690,7 @@ function addrPicked(data){
   else if(bld && road && pl!==bld){ addr+=' ('+bld+')'; }
   $('addr').value=addr;
   $('addrLayer').classList.remove('on'); $('addrBox').innerHTML='';
-  render(); $('addrDetail').focus();
+  render(); $('program').focus();
 }
 function addrFail(){
   var note=$('addrNote');
@@ -696,6 +719,40 @@ function openAddrInline(){
   }).catch(addrFail);
 }
 
+/* ---------- 보내기 (접수함 웹앱으로 POST) ---------- */
+var sending=false;
+function sendResult(html, kind){
+  var box=$('sendResult'); box.innerHTML = html ? '<div class="note '+(kind||'')+'">'+html+'</div>' : '';
+}
+function sendRequest(btn){
+  var r=render(); if(r.blocked || sending) return;
+  if(!INBOX_URL || /^PUT_/.test(INBOX_URL)){ sendResult('접수함 주소가 아직 설정되지 않았습니다. 아래 \'요청서 복사\'로 보내 주세요.','warn'); return; }
+  var s=r.state; var summary=r.text.split('\n\n[자료] ')[0];
+  var body=JSON.stringify(payload_(s, summary));
+  sending=true; btn.disabled=true; var old=btn.textContent; btn.textContent='보내는 중…';
+  sendResult('');
+  var ctrl = (typeof AbortController!=='undefined') ? new AbortController() : null;
+  var timer = ctrl ? setTimeout(function(){ ctrl.abort(); }, 20000) : null;
+  fetch(INBOX_URL, { method:'POST', body:body, headers:{'Content-Type':'text/plain;charset=utf-8'}, redirect:'follow', signal: ctrl?ctrl.signal:undefined })
+    .then(function(res){ return res.text(); })
+    .then(function(t){
+      var o=null; try{ o=JSON.parse(t); }catch(e){}
+      if(o && o.ok){
+        sendResult('<b>접수되었습니다.</b> 접수번호 <b>'+esc(String(o.no))+'</b> · '+esc(String(o.at||''))+'<br>안세환에게 알림이 갔습니다. 수정할 내용이 생기면 고쳐서 다시 보내 주시면 됩니다(새 번호로 접수).','ok');
+        try{ localStorage.setItem(KEY+'.lastSent', JSON.stringify({no:o.no, at:o.at, event:one(s.eventName)})); }catch(e){}
+      } else {
+        sendResult('보내지 못했습니다'+(o&&o.error?': '+esc(o.error):'')+'. 아래 \'요청서 복사\'로 보내 주셔도 됩니다.','bad');
+      }
+    })
+    .catch(function(){ sendResult('연결이 되지 않았습니다(인터넷 연결을 한 번 봐 주세요). 아래 \'요청서 복사\'로 보내 주셔도 됩니다.','bad'); })
+    .then(function(){ if(timer) clearTimeout(timer); sending=false; btn.disabled=false; btn.textContent=old; });
+}
+function drawVersion(){
+  $('verTag').textContent='v'+VERSION;
+  $('changelogList').innerHTML=CHANGELOG.map(function(c){ return '<li><b>v'+esc(c[0])+'</b> ('+esc(c[1])+') — '+esc(c[2])+'</li>'; }).join('');
+  try{ var last=JSON.parse(localStorage.getItem(KEY+'.lastSent')||'null'); if(last&&last.no) sendResult('이 기기에서 마지막으로 보낸 요청서: '+esc(last.event||'')+' · 접수번호 '+esc(String(last.no))+' · '+esc(String(last.at||'')),''); }catch(e){}
+}
+
 /* ---------- init ---------- */
 function init(){
   if(init.done) return; init.done=true;
@@ -715,6 +772,10 @@ function init(){
   $('btnPrev').addEventListener('click',function(){go(cur-1)});
   $('btnNext').addEventListener('click',function(){ go(cur===TOTAL?1:cur+1) });
   $('btnCopy').addEventListener('click',function(){ var r=render(); if(r.blocked) return; copyText(r.text, this, '복사되었습니다'); });
+  $('btnSend').addEventListener('click',function(){ sendRequest(this); });
+  $('btnChangelog').addEventListener('click',function(){ var c=$('changelog'); c.style.display = c.style.display==='none' ? '' : 'none'; if(c.style.display==='') { try{ c.scrollIntoView({block:'nearest',behavior:'smooth'}); }catch(e){} } });
+  drawVersion();
+  if(!INBOX_URL || /^PUT_/.test(INBOX_URL)){ $('btnSend').style.display='none'; $('sendNote').style.display='none'; }
   $('btnImport').addEventListener('click',function(){ var b=$('ioBox'); b.classList.toggle('on'); if(b.classList.contains('on')) $('ioText').focus(); });
   $('btnImportGo').addEventListener('click',function(){ importText($('ioText').value); });
   $('btnReset').addEventListener('click',function(){ twoTap(this,'모든 답이 지워집니다 — 한 번 더 누르시면 실행',resetForm); });
