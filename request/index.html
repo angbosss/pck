@@ -399,8 +399,9 @@ var STEP_NAMES=['행사','인원·마감','받을 것','주최 측·안내문','
 var TOTAL=STEP_NAMES.length;
 var KEY='pckEventRequest.v1';
 /* ---- 버전. 페이지를 고칠 때마다 VERSION을 올리고 CHANGELOG 맨 앞에 한 줄 보탠다. 마스터·요청서 시트 '버전로그' 탭에도 같은 줄을 적는다. ---- */
-var VERSION='3.1';
+var VERSION='3.2';
 var CHANGELOG=[
+  ['3.2','2026-11-03','정리글의 마감 줄을 "미정"으로만 — 복사해 보내던 때의 설명("안세환이 정해 안내") 제거'],
   ['3.1','2026-11-03','요청서 보내기 버튼 — 누르면 접수함(구글 시트)으로 바로 들어가고 접수번호가 보임. 요청서 복사는 예비로 남김. 페이지에 버전 표시·변경 내역 추가'],
   ['3.0','2026-11-03','상세 주소 칸 제거(장소명·주소만). 주소 검색은 적은 글을 검색어로 새 창'],
   ['2.9','2026-11-03','안내 문구를 폼 사용 안내만으로 정리. 머리글·꼬리글 압축, 보내는 곳 안내 제거'],
@@ -495,7 +496,7 @@ function buildRequest(s,d){
   var cap=(s.cap&&+s.cap>0)?s.cap+'대':'정원 없음';
   var wait=(s.waitlist==='no')?'대기 안 받음':('대기 받음'+((s.waitCap&&+s.waitCap>0)?' ('+s.waitCap+'명까지)':' (제한 없음)'));
   L.push('정원: '+cap+' / '+wait);
-  L.push('신청 마감: '+(s.deadline?fmtDT(s.deadline):'미정 (안세환이 정해 안내)'));
+  L.push('신청 마감: '+(s.deadline?fmtDT(s.deadline):'미정'));
   L.push('회비: '+(s.fee==='yes'?('있음'+(one(s.feeNote)?' — '+one(s.feeNote):'')):'없음'));
   if(d.everland) L.push('에버랜드(용인) 행사: 예');
   var items='차량번호 '+(s.plate==='yes'?'예':'아니오')+' / 차명 '+(s.carModel==='yes'?'예':'아니오')+' / 동반인 '+
