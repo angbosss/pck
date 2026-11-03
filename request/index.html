@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PCK 행사 접수 요청서</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="포르쉐 클럽 코리아 운영진이 행사 사실만 적어 안세환에게 보내는 신청 접수 요청서.">
+<style>
+/* 밝은 회색 한 가지 톤, 다크 모드 없음. 휴대폰 세로 화면 기준. */
+:root{
+  --bg:#f3f4f6; --card:#ffffff; --ink:#111827; --ink2:#374151; --ink3:#6b7280;
+  --line:#e5e7eb; --line2:#d1d5db;
+  --warn:#b45309; --warnbg:#fffbeb; --warnline:#fcd34d;
+  --bad:#b91c1c; --badbg:#fef2f2; --badline:#fca5a5;
+  --ok:#047857; --okbg:#ecfdf5; --okline:#6ee7b7;
+  --r:12px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Malgun Gothic","Segoe UI",Roboto,sans-serif;
+  font-size:16px; line-height:1.55; font-variant-numeric:tabular-nums;
+  padding-bottom:calc(88px + env(safe-area-inset-bottom,0px));
+}
+header{padding-block:28px 8px; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px)); max-width:720px; margin:0 auto}
+.over{font-size:13px; font-weight:600; letter-spacing:.08em; color:var(--ink3)}
+h1{font-size:24px; line-height:1.25; font-weight:800; letter-spacing:-.02em; margin:4px 0 6px; text-wrap:balance}
+.lead{font-size:15px; color:var(--ink2); margin:0}
+main{max-width:720px; margin:0 auto; padding-block:0; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px))}
+main > *{min-width:0}
+
+.steps{display:flex; gap:8px; overflow-x:auto; padding:12px 0 4px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.steps::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto; display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:0 12px; border:1px solid var(--line2); border-radius:999px; background:#fff; color:var(--ink2); font:inherit; font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap}
+.chip b{display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:var(--line); color:var(--ink2); font-size:12px; font-weight:700}
+.chip.cur{background:var(--ink); color:#fff; border-color:var(--ink)}
+.chip.cur b{background:#fff; color:var(--ink)}
+.chip.done b{background:var(--ok); color:#fff}
+.bar{height:4px; background:var(--line); border-radius:2px; margin:6px 0 14px; overflow:hidden}
+.bar i{display:block; height:100%; background:var(--ink); width:0; transition:width .25s}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+
+section.step{display:none}
+section.step.active{display:block}
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:18px 16px; margin-bottom:14px}
+h2{font-size:19px; font-weight:800; letter-spacing:-.015em; margin:0 0 4px}
+.sub{font-size:14px; color:var(--ink3); margin:0 0 14px}
+.f{margin:0 0 18px}
+.f:last-child{margin-bottom:0}
+.t{display:block; font-size:15px; font-weight:700; color:var(--ink); margin:0 0 6px}
+.t .req{color:var(--bad); font-weight:800; margin-left:2px}
+.t .opt{font-weight:500; color:var(--ink3); font-size:13px; margin-left:6px}
+.h{font-size:13.5px; color:var(--ink3); margin:6px 0 0; line-height:1.5}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],textarea{
+  width:100%; min-height:48px; padding:11px 14px; font:inherit; font-size:16px; color:var(--ink);
+  background:#fff; border:1px solid var(--line2); border-radius:10px; outline:none; -webkit-appearance:none; appearance:none;
+}
+textarea{min-height:96px; resize:vertical; line-height:1.5}
+input:focus,textarea:focus{border-color:var(--ink); box-shadow:0 0 0 3px rgba(17,24,39,.12)}
+input[readonly],textarea[readonly]{background:#f9fafb; color:var(--ink2)}
+.row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.row > *{min-width:0}
+@media (max-width:420px){.row{grid-template-columns:1fr}}
+.addrrow{display:flex; gap:8px; align-items:stretch}
+.addrrow input{flex:1 1 auto; min-width:0}
+.addrrow .btn{flex:0 0 auto; min-height:48px; white-space:nowrap}
+.addrlayer{display:none; margin-top:10px}
+.addrlayer.on{display:block}
+.addrbox{width:100%; min-height:400px; border:1px solid var(--line2); border-radius:10px; overflow:hidden; background:#fff}
+.linkbtn{display:inline; padding:0; border:0; background:none; font:inherit; font-size:inherit; color:var(--ink); font-weight:700; text-decoration:underline; text-underline-offset:2px; cursor:pointer; min-height:0}
+.linkbtn:focus-visible{outline:2px solid rgba(17,24,39,.35); outline-offset:2px}
+.pills{display:flex; flex-wrap:wrap; gap:8px}
+.pill{position:relative; display:inline-block}
+.pill input{position:absolute; opacity:0; width:1px; height:1px; pointer-events:none}
+.pill span{display:inline-flex; align-items:center; min-height:44px; padding:0 16px; border:1px solid var(--line2); border-radius:999px; background:#fff; color:var(--ink2); font-size:15px; font-weight:600; cursor:pointer; user-select:none}
+.pill input:checked+span{background:var(--ink); color:#fff; border-color:var(--ink)}
+.pill input:focus-visible+span{box-shadow:0 0 0 3px rgba(17,24,39,.25)}
+.pill.cb input:checked+span::before{content:"✓"; margin-right:6px; font-weight:800}
+.cond{display:none; margin-top:12px; padding:12px 12px 2px; border-left:3px solid var(--line2)}
+.cond.on{display:block}
+.cond .f:last-child{margin-bottom:10px}
+.note{font-size:14px; line-height:1.5; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:#f9fafb; color:var(--ink2); margin:8px 0 0}
+.note.warn{background:var(--warnbg); border-color:var(--warnline); color:var(--warn)}
+.note.bad{background:var(--badbg); border-color:var(--badline); color:var(--bad)}
+.note.ok{background:var(--okbg); border-color:var(--okline); color:var(--ok)}
+.list{margin:6px 0 0; padding-left:18px}
+.list li{margin:2px 0}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 18px; border-radius:10px; border:1px solid var(--ink); background:var(--ink); color:#fff; font:inherit; font-size:16px; font-weight:700; cursor:pointer; -webkit-tap-highlight-color:transparent}
+.btn.ghost{background:#fff; color:var(--ink)}
+.btn.sm{min-height:40px; padding:0 14px; font-size:14px; border-radius:8px}
+.btn.quiet{background:#fff; color:var(--ink2); border-color:var(--line2); font-weight:600}
+.btn.big{width:100%; min-height:56px; font-size:17px}
+.btn[disabled]{opacity:.4; cursor:default}
+.btn.copied{background:var(--ok); border-color:var(--ok); color:#fff}
+.btn:focus-visible{outline:3px solid rgba(17,24,39,.35); outline-offset:2px}
+.tools{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+.navbar{position:fixed; left:0; right:0; bottom:0; background:rgba(243,244,246,.92); backdrop-filter:saturate(1.2) blur(8px); border-top:1px solid var(--line); padding-block:10px calc(10px + env(safe-area-inset-bottom,0px)); padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px))}
+.navbar .in{max-width:720px; margin:0 auto; display:flex; gap:10px}
+.navbar .btn{flex:1}
+#preview{font-size:14.5px; line-height:1.6; min-height:200px; white-space:pre-wrap}
+.foot{font-size:13px; color:var(--ink3); text-align:center; margin:20px 0 8px; line-height:1.5}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="over">포르쉐 클럽 코리아 · 운영진용</div>
+  <h1>행사 접수 요청서</h1>
+  <p class="lead">행사에 대해 알고 계신 것만 적어 주시면 됩니다. 모르는 칸은 비워 두셔도 되고, 회원 정보는 적지 않습니다. 다 적으신 뒤 5번에서 '요청서 복사'를 눌러 주시면 됩니다.</p>
+  <p class="lead" style="margin-top:8px">따로 저장 버튼은 없습니다. 적으시는 대로 이 휴대폰 안에만 남아 창을 닫았다 여셔도 이어지고, 어디로도 보내지지 않습니다. 처음부터 다시 하고 싶으시면 <button type="button" class="linkbtn" id="btnResetTop">처음부터 다시</button>를 눌러 주세요.</p>
+</header>
+
+<main>
+  <nav class="steps" id="steps" aria-label="단계"></nav>
+  <div class="bar"><i id="bar"></i></div>
+
+  <!-- 1. 행사 -->
+  <section class="step active" data-step="1">
+    <div class="card">
+      <h2>1. 행사</h2>
+      <p class="sub">회원 공지와 신청 페이지 첫머리에 그대로 들어가는 내용입니다.</p>
+
+      <div class="f">
+        <label class="t" for="requester">요청해 주시는 분 성함<span class="req">*</span></label>
+        <input type="text" id="requester" name="requester" placeholder="예: 홍길동" autocomplete="off">
+      </div>
+
+      <div class="f">
+        <label class="t" for="eventName">행사명<span class="req">*</span></label>
+        <input type="text" id="eventName" name="eventName" placeholder="예: ○○ 서킷 클럽데이 (트랙 체험)" autocomplete="off">
+      </div>
+
+      <div class="f">
+        <label class="t" for="eventDate">행사 날짜<span class="req">*</span></label>
+        <input type="date" id="eventDate" name="eventDate">
+      </div>
+
+      <div class="f">
+        <span class="t">시작·종료 시각<span class="opt">선택</span></span>
+        <div class="row">
+          <div><input type="time" id="startTime" name="startTime" aria-label="시작 시각"></div>
+          <div><input type="time" id="endTime" name="endTime" aria-label="종료 시각"></div>
+        </div>
+      </div>
+
+      <div class="f">
+        <label class="t" for="place">장소명<span class="opt">선택</span></label>
+        <input type="text" id="place" name="place" placeholder="예: ○○ 서킷">
+      </div>
+
+      <div class="f">
+        <label class="t" for="addr">주소<span class="opt">선택</span></label>
+        <div class="addrrow">
+          <input type="text" id="addr" name="addr" placeholder="장소명이나 도로명 일부를 적고 검색 (예: 에버랜드로 199)">
+          <button type="button" class="btn sm" id="btnAddr">주소 검색</button>
+        </div>
+        <p class="h" id="addrNote">적으신 글을 검색어로 새 창이 열리고, 주소를 고르시면 창이 닫히며 이 칸에 들어옵니다. 창이 열리지 않으면 <button type="button" class="linkbtn" id="btnAddrInline">페이지 안에서 검색</button>을 눌러 주세요.</p>
+        <div id="addrLayer" class="addrlayer" aria-label="주소 검색">
+          <div class="addrbox" id="addrBox"></div>
+          <div class="tools"><button type="button" class="btn sm quiet" id="btnAddrClose">닫기</button></div>
+        </div>
+        <input type="text" id="addrDetail" name="addrDetail" placeholder="상세 (예: 제2주차장, 피트 빌딩 2층)" style="margin-top:8px">
+      </div>
+
+      <div class="f">
+        <label class="t" for="program">당일 순서<span class="opt">선택</span></label>
+        <textarea id="program" name="program" placeholder="한 줄에 하나씩&#10;예: 11:00 도착·차량 등록&#10;예: 13:00 퍼레이드 주행 (신청 대상)"></textarea>
+      </div>
+
+      <div class="f">
+        <label class="t" for="conditions">참가 조건<span class="opt">선택</span></label>
+        <textarea id="conditions" name="conditions" placeholder="예: 브랜드 무관, 전기차 불가, SUV 가능"></textarea>
+      </div>
+
+      <div class="f">
+        <span class="t">에버랜드(용인) 행사인가요?</span>
+        <div class="pills" role="radiogroup">
+          <label class="pill"><input type="radio" name="everland" value="no" checked><span>아니오</span></label>
+          <label class="pill"><input type="radio" name="everland" value="yes"><span>예</span></label>
+        </div>
+        <p class="h" id="everlandNote">'예'를 고르시면 지난 에버랜드 행사를 기준으로 장소·받을 항목·주최 측 명단을 미리 채워 드립니다. 다른 부분만 고쳐 주시면 됩니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 인원·마감·회비 -->
+  <section class="step" data-step="2">
+    <div class="card">
+      <h2>2. 인원·마감·회비</h2>
+      <p class="sub">아직 정해지지 않은 것은 비워 두셔도 괜찮습니다. 제가 맞춰 정한 뒤 말씀드리겠습니다.</p>
+
+      <div class="f">
+        <label class="t" for="cap">정원<span class="opt">차량(회원) 기준, 동반인은 세지 않습니다</span></label>
+        <input type="number" id="cap" name="cap" inputmode="numeric" min="1" placeholder="예: 20">
+        <p class="h">비워 두시면 정원 없이 받습니다.</p>
+      </div>
+
+      <div class="f">
+        <span class="t">정원이 차면 대기를 받나요?</span>
+        <div class="pills" role="radiogroup">
+          <label class="pill"><input type="radio" name="waitlist" value="yes" checked><span>예</span></label>
+          <label class="pill"><input type="radio" name="waitlist" value="no"><span>아니오</span></label>
+        </div>
+        <div class="cond" id="c-waitlist">
+          <label class="t" for="waitCap">대기는 몇 명까지?<span class="opt">비워 두시면 제한 없음</span></label>
+          <input type="number" id="waitCap" name="waitCap" inputmode="numeric" min="1" placeholder="예: 15">
+        </div>
+      </div>
+
+      <div class="f">
+        <label class="t" for="deadline">신청 마감<span class="opt">선택</span></label>
+        <input type="datetime-local" id="deadline" name="deadline">
+        <p class="h">비워 두시면 제가 정하겠습니다. 보통 주최 측에 명단을 보내는 날 전날로 잡습니다.</p>
+      </div>
+
+      <div class="f">
+        <span class="t">회비(참가비)가 있나요?</span>
+        <div class="pills" role="radiogroup">
+          <label class="pill"><input type="radio" name="fee" value="no" checked><span>없음</span></label>
+          <label class="pill"><input type="radio" name="fee" value="yes"><span>있음</span></label>
+        </div>
+        <div class="cond" id="c-fee">
+          <label class="t" for="feeNote">금액과 안내 내용</label>
+          <input type="text" id="feeNote" name="feeNote" placeholder="예: 1인 30,000원, 입금 계좌는 공지에 따로 안내">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 신청서에 받을 것 -->
+  <section class="step" data-step="3">
+    <div class="card">
+      <h2>3. 신청서에 받을 것</h2>
+      <p class="sub">이름·휴대폰·회원번호는 기본으로 받습니다. 이 행사에 더 필요한 것만 골라 주시면 됩니다.</p>
+
+      <div class="f">
+        <span class="t">차량번호가 필요한가요?</span>
+        <div class="pills" role="radiogroup">
+          <label class="pill"><input type="radio" name="plate" value="no" checked><span>아니오</span></label>
+          <label class="pill"><input type="radio" name="plate" value="yes"><span>예</span></label>
+        </div>
+        <p class="h">주최 측에서 차량 출입 등록을 하는 행사라면 보통 필요합니다.</p>
+      </div>
+
+      <div class="f">
+        <span class="t">차명(당일 차종)이 필요한가요?</span>
+        <div class="pills" role="radiogroup">
+          <label class="pill"><input type="radio" name="carModel" value="no" checked><span>아니오</span></label>
+          <label class="pill"><input type="radio" name="carModel" value="yes"><span>예</span></label>
+        </div>
+      </div>
+
+      <div class="f">
+        <span class="t">동반인을 받나요?</span>
+        <div class="pills" role="radiogroup">
+          <label class="pill"><input type="radio" name="comp" value="no" checked><span>아니오</span></label>
+          <label class="pill"><input type="radio" name="comp" value="yes"><span>예</span></label>
+        </div>
+        <div class="cond" id="c-comp">
+          <div class="f">
+            <label class="t" for="compMax">회원 1명당 동반인 몇 명까지?</label>
+            <div class="row">
+              <div><input type="number" id="compMax" name="compMax" inputmode="numeric" min="1" placeholder="예: 3"></div>
+              <div class="pills"><label class="pill cb"><input type="checkbox" name="compUnlimited"><span>제한 없음</span></label></div>
+            </div>
+          </div>
+          <div class="f" id="f-compNames">
+            <span class="t">동반인 이름까지 받나요?</span>
+            <div class="pills" role="radiogroup">
+              <label class="pill"><input type="radio" name="compNames" value="yes" checked><span>예, 이름까지</span></label>
+              <label class="pill"><input type="radio" name="compNames" value="no"><span>아니오, 인원수만</span></label>
+            </div>
+            <p class="h">에버랜드는 동반인 이름으로 출입 등록을 하기 때문에 보통 '예'로 둡니다. 회원은 신청 뒤 동반인 화면에서 본인 차종·차량번호를 확인하고 동반인 이름을 적게 됩니다.</p>
+          </div>
+          <p class="h" id="compNamesOff">동반인은 인원수만 받습니다. 이름까지 필요한 행사라면 5번 '추가 요청'에 한 줄 남겨 주시면 반영하겠습니다.</p>
+          <div class="f">
+            <label class="t" for="compRules">동반인 조건<span class="opt">선택</span></label>
+            <textarea id="compRules" name="compRules" placeholder="예: 신청자 차량 동승, 미성년자는 보호자 동반"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="f">
+        <label class="t" for="extraItems">그 밖에 받을 것<span class="opt">선택</span></label>
+        <textarea id="extraItems" name="extraItems" placeholder="한 줄에 하나씩&#10;예: 식사 메뉴 (한식/양식)&#10;예: 티셔츠 사이즈"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 주최 측·안내문 -->
+  <section class="step" data-step="4">
+    <div class="card">
+      <h2>4. 주최 측·안내문</h2>
+      <p class="sub">참가자 정보를 주최 측에 보내야 하는지, 안내 자료가 있는지 여쭙는 부분입니다.</p>
+
+      <div class="f">
+        <span class="t">주최 측(행사장)에 참가자 명단을 보내야 하나요?</span>
+        <div class="pills" role="radiogroup">
+          <label class="pill"><input type="radio" name="provider" value="no" checked><span>아니오</span></label>
+          <label class="pill"><input type="radio" name="provider" value="yes"><span>예</span></label>
+        </div>
+        <div class="cond" id="c-provider">
+          <div class="f">
+            <label class="t" for="providerName">어디로 보내나요?</label>
+            <input type="text" id="providerName" name="providerName" placeholder="예: ○○ 서킷 운영팀">
+          </div>
+          <div class="f">
+            <span class="t">주최 측에서 요청하는 항목</span>
+            <div class="pills" id="provideItems"></div>
+            <p class="h" id="provideHint">3번에서 받기로 한 항목 중에서 고르실 수 있습니다. 필요한 항목이 보이지 않으면 3번에서 '예'로 바꿔 주시면 됩니다. 휴대폰·회원번호는 클럽 내부용이라 밖으로 보내지 않습니다.</p>
+          </div>
+          <div class="f">
+            <label class="t" for="provideBy">명단을 보내야 하는 시한<span class="opt">선택</span></label>
+            <input type="datetime-local" id="provideBy" name="provideBy">
+            <p class="h">이 시한을 기준으로 취소 마감(픽스일)을 정합니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="f">
+        <span class="t">참가자용 안내문(브로슈어·주의사항)이 있나요?</span>
+        <div class="pills" role="radiogroup">
+          <label class="pill"><input type="radio" name="guide" value="no" checked><span>없음</span></label>
+          <label class="pill"><input type="radio" name="guide" value="yes"><span>있음</span></label>
+        </div>
+        <div class="cond" id="c-guide">
+          <div class="f">
+            <label class="t" for="guideNote">무엇이 몇 쪽인지</label>
+            <input type="text" id="guideNote" name="guideNote" placeholder="예: 주최 측 브로슈어 PDF 4쪽">
+            <p class="h">파일은 요청서와 함께 따로 보내 주시면 신청 페이지 안에서 그림으로 보여 드립니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 보내기 -->
+  <section class="step" data-step="5">
+    <div class="card">
+      <h2>5. 추가 요청·보내기</h2>
+      <p class="sub">앞에서 여쭙지 못한 것은 여기에 자유롭게 적어 주세요. 그다음 아래 '요청서 복사'를 눌러 주시면 됩니다.</p>
+      <div class="f">
+        <label class="t" for="memo">추가 요청·바라는 점<span class="opt">선택</span></label>
+        <textarea id="memo" name="memo" style="min-height:130px" placeholder="무엇이든 편하게 적어 주세요. 예:&#10;· 신청서에 더 받고 싶은 것 (예: 참가자 혈액형)&#10;· 신청 페이지에 넣을 안내 문구&#10;· 공지 올릴 시점, 명단을 보내 줄 사람&#10;· 지난 행사와 다르게 하고 싶은 점"></textarea>
+        <p class="h">적어 주신 내용은 신청 페이지와 접수 방식에 반영됩니다.</p>
+      </div>
+      <div id="checks"></div>
+    </div>
+
+    <div class="card">
+      <span class="t">요청서</span>
+      <textarea id="preview" readonly></textarea>
+      <div class="tools" style="margin-top:10px">
+        <button type="button" class="btn big" id="btnCopy">요청서 복사</button>
+      </div>
+      <p class="h" id="copyNote">복사된 글 끝의 [자료] 줄은 그대로 두시면 됩니다. 그 줄로 요청서를 다시 불러올 수 있습니다.</p>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:16px">보관·불러오기</h2>
+      <p class="sub">답은 이 휴대폰 안에만 남습니다. 다른 기기에서 이어 쓰시거나 보내신 뒤 고치실 때는 복사해 두신 요청서를 여기에 붙여 넣으시면 답이 그대로 돌아옵니다.</p>
+      <div class="tools">
+        <button type="button" class="btn sm quiet" id="btnImport">요청서 붙여 넣기</button>
+        <button type="button" class="btn sm quiet" id="btnReset">처음부터 다시</button>
+      </div>
+      <div class="cond" id="ioBox">
+        <textarea id="ioText" placeholder="복사해 두신 요청서 전체를 붙여 넣고 '불러오기'를 눌러 주세요"></textarea>
+        <div class="tools" style="margin-bottom:10px"><button type="button" class="btn sm" id="btnImportGo">불러오기</button></div>
+      </div>
+      <p class="h" id="ioNote"></p>
+    </div>
+  </section>
+
+  <p class="foot">포르쉐 클럽 코리아 · 행사 접수 요청서</p>
+</main>
+
+<div class="navbar">
+  <div class="in">
+    <button type="button" class="btn ghost" id="btnPrev">이전</button>
+    <button type="button" class="btn" id="btnNext">다음</button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var STEP_NAMES=['행사','인원·마감','받을 것','주최 측·안내문','추가 요청·보내기'];
+var TOTAL=STEP_NAMES.length;
+var KEY='pckEventRequest.v1';
+var DAYS=['일','월','화','수','목','금','토'];
+var cur=1;
+
+var $=function(id){return document.getElementById(id)};
+var $$=function(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))};
+function pad(n){return (n<10?'0':'')+n}
+function parseDate(v){
+  if(!v) return null;
+  var m=String(v).match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);
+  if(!m) return null;
+  return new Date(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0));
+}
+function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function fmtD(v){var d=parseDate(v); if(!d) return ''; return ymd(d)+'('+DAYS[d.getDay()]+')'}
+function fmtDT(v){var d=parseDate(v); if(!d) return ''; return fmtD(v)+' '+pad(d.getHours())+':'+pad(d.getMinutes())}
+function one(s){return String(s==null?'':s).replace(/\r?\n+/g,' ').trim()}
+function lines(s){return String(s||'').split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+/* ---------- state ---------- */
+function getState(){
+  var s={};
+  $$('input,textarea').forEach(function(el){
+    if(!el.name) return;
+    if(el.type==='radio'){ if(!(el.name in s)) s[el.name]=''; if(el.checked) s[el.name]=el.value; }
+    else if(el.type==='checkbox'){
+      if(el.dataset.group){ if(!Array.isArray(s[el.name])) s[el.name]=[]; if(el.checked) s[el.name].push(el.value); }
+      else s[el.name]=!!el.checked;
+    }
+    else s[el.name]=el.value;
+  });
+  return s;
+}
+function setState(s){
+  if(!s) return;
+  $$('input,textarea').forEach(function(el){
+    if(!el.name || !(el.name in s)) return;
+    var v=s[el.name];
+    if(el.type==='radio') el.checked=(el.value===v);
+    else if(el.type==='checkbox'){ if(el.dataset.group) el.checked=Array.isArray(v)&&v.indexOf(el.value)>=0; else el.checked=!!v; }
+    else el.value=(v==null?'':v);
+  });
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(getState())); }catch(e){} }
+function load(){ try{ var raw=localStorage.getItem(KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; } }
+
+/* ---------- derived ---------- */
+function derive(s){
+  var d={};
+  d.everland = s.everland==='yes';
+  d.compOn = s.comp==='yes';
+  d.compNames = d.compOn && d.everland && s.compNames==='yes';   // 지침 8번: 이름까지는 에버랜드(용인) 행사만
+  d.compMax = d.compOn ? (s.compUnlimited ? '제한 없음' : (s.compMax||'')) : '';
+  d.items=['이름','휴대폰','회원번호'];
+  if(s.plate==='yes') d.items.push('차량번호');
+  if(s.carModel==='yes') d.items.push('차명');
+  if(d.compOn) d.items.push('동반인 수');
+  if(d.compNames) d.items.push('동반인 이름');
+  d.extras=lines(s.extraItems);
+  d.providerOn = s.provider==='yes';
+  d.provideOptions = d.items.filter(function(x){ return x!=='휴대폰' && x!=='회원번호'; });   // 지침 4번: 제출 탭엔 운영진용 열 없음
+  d.provideItems=(Array.isArray(s.provideItems)?s.provideItems:[]).filter(function(x){return d.provideOptions.indexOf(x)>=0});
+  d.place=[one(s.place), [one(s.addr), one(s.addrDetail)].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+  d.when=(function(){
+    if(!s.eventDate) return '';
+    var w=fmtD(s.eventDate);
+    if(s.startTime) w+=' '+s.startTime+(s.endTime?'–'+s.endTime:'');
+    else if(s.endTime) w+=' ~'+s.endTime;
+    return w;
+  })();
+  return d;
+}
+
+/* ---------- request text ---------- */
+function buildRequest(s,d){
+  var L=[];
+  var now=new Date();
+  L.push('[PCK 행사 접수 요청서] '+ymd(now)+' '+pad(now.getHours())+':'+pad(now.getMinutes())+' · 요청: '+(one(s.requester)||'(이름 없음)'));
+  L.push('행사명: '+(one(s.eventName)||'(비움)'));
+  L.push('일시: '+(d.when||'(비움)'));
+  L.push('장소: '+(d.place||'(비움)'));
+  if(lines(s.program).length) L.push('순서: '+lines(s.program).join(' / '));
+  if(lines(s.conditions).length) L.push('참가 조건: '+lines(s.conditions).join(' / '));
+  var cap=(s.cap&&+s.cap>0)?s.cap+'대':'정원 없음';
+  var wait=(s.waitlist==='no')?'대기 안 받음':('대기 받음'+((s.waitCap&&+s.waitCap>0)?' ('+s.waitCap+'명까지)':' (제한 없음)'));
+  L.push('정원: '+cap+' / '+wait);
+  L.push('신청 마감: '+(s.deadline?fmtDT(s.deadline):'미정 (안세환이 정해 안내)'));
+  L.push('회비: '+(s.fee==='yes'?('있음'+(one(s.feeNote)?' — '+one(s.feeNote):'')):'없음'));
+  if(d.everland) L.push('에버랜드(용인) 행사: 예');
+  var items='차량번호 '+(s.plate==='yes'?'예':'아니오')+' / 차명 '+(s.carModel==='yes'?'예':'아니오')+' / 동반인 '+
+    (d.compOn?((d.compMax||'?')+(d.compMax==='제한 없음'?'':'명까지')+(d.compNames?', 이름까지(동반인 화면)':', 인원수만')):'안 받음');
+  if(d.extras.length) items+=' / 기타: '+d.extras.join(', ');
+  L.push('받을 것: '+items);
+  if(d.compOn && lines(s.compRules).length) L.push('동반인 조건: '+lines(s.compRules).join(' / '));
+  if(d.providerOn){
+    L.push('주최 측 명단: '+(one(s.providerName)||'(어디인지 비움)')+' — '+(d.provideItems.length?d.provideItems.join('·'):'(항목 비움)')+(s.provideBy?', '+fmtDT(s.provideBy)+'까지':', 시한 미정'));
+  } else L.push('주최 측 명단: 넘기지 않음');
+  L.push('안내문: '+(s.guide==='yes'?('있음'+(one(s.guideNote)?' — '+one(s.guideNote):'')+' (파일 따로 보냄)'):'없음'));
+  if(lines(s.memo).length) L.push('추가 요청: '+lines(s.memo).join(' / '));
+  L.push('');
+  L.push('[자료] '+JSON.stringify({v:1, kind:'pck-event-request', answers:s}));
+  return L.join('\n');
+}
+
+/* ---------- checks ---------- */
+function buildChecks(s,d){
+  var bad=[], warn=[], info=[];
+  if(!one(s.requester)) bad.push('1번 성함이 아직 비어 있습니다.');
+  if(!one(s.eventName)) bad.push('1번 행사명이 아직 비어 있습니다.');
+  if(!s.eventDate) bad.push('1번 행사 날짜가 아직 비어 있습니다.');
+  if(s.deadline && s.eventDate && parseDate(s.deadline)>parseDate(s.eventDate+'T23:59')) warn.push('신청 마감이 행사 날짜보다 뒤로 되어 있습니다. 맞는지 한 번 봐 주세요.');
+  if(s.waitlist==='yes' && !(s.cap&&+s.cap>0)) info.push('정원이 없으면 대기는 생기지 않습니다.');
+  if(d.compOn && !s.compUnlimited && !(s.compMax&&+s.compMax>0)) warn.push('동반인 최대 인원이 비어 있습니다. 숫자를 적어 주시거나 제한 없음을 골라 주세요.');
+  if(d.providerOn && !one(s.providerName)) warn.push('명단을 보낼 곳이 비어 있습니다.');
+  if(d.providerOn && !d.provideItems.length) warn.push('주최 측에서 요청하는 항목이 비어 있습니다. 필요한 항목이 목록에 없으면 3번에서 받기로 바꿔 주시면 됩니다.');
+  if(d.providerOn && s.provideBy && s.eventDate && parseDate(s.provideBy)>parseDate(s.eventDate+'T23:59')) warn.push('명단 시한이 행사 날짜보다 뒤로 되어 있습니다. 맞는지 한 번 봐 주세요.');
+  if(d.providerOn && !s.provideBy) info.push('명단 시한이 없으면 취소 마감(픽스일)은 제가 정해 말씀드리겠습니다.');
+  if(d.compNames && (s.plate!=='yes' || s.carModel!=='yes')) warn.push('동반인 이름까지 받는 행사는 동반인 화면에서 본인 차종·차량번호를 확인하게 되어 있어, 3번 차량번호·차명을 둘 다 \'예\'로 두시는 게 맞습니다.');
+  if(d.compNames && !d.providerOn) warn.push('동반인 이름은 주최 측 출입 등록용으로만 받습니다. 명단을 보낼 곳이 없다면 인원수만 받는 쪽으로 바꿔 주시면 됩니다.');
+  if(d.compNames && d.providerOn && d.provideItems.indexOf('동반인 이름')<0) warn.push('동반인 이름까지 받는데 주최 측 항목에는 빠져 있습니다. 항목에 넣어 주시거나 인원수만 받는 쪽으로 바꿔 주시면 됩니다.');
+  if(s.guide==='yes') info.push('안내문 파일은 요청서와 함께 따로 보내 주시면 됩니다.');
+  var h='';
+  if(bad.length) h+='<div class="note bad"><b>먼저 채워 주시면 좋겠습니다</b><ul class="list">'+bad.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div>';
+  if(warn.length) h+='<div class="note warn"><b>한 번 더 봐 주시면 좋겠습니다</b><ul class="list">'+warn.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div>';
+  if(info.length) h+='<div class="note"><b>참고</b><ul class="list">'+info.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div>';
+  if(!bad.length && !warn.length) h+='<div class="note ok">빠진 것 없이 잘 채워졌습니다. 아래 요청서를 복사해 보내 주시면 됩니다.</div>';
+  return {html:h, blocked:bad.length>0};
+}
+
+/* ---------- render ---------- */
+function refreshConditional(s,d){
+  $('c-waitlist').classList.toggle('on', s.waitlist==='yes');
+  $('c-fee').classList.toggle('on', s.fee==='yes');
+  $('c-comp').classList.toggle('on', d.compOn);
+  $('f-compNames').style.display = d.everland ? '' : 'none';
+  $('compNamesOff').style.display = d.everland ? 'none' : '';
+  $('compMax').disabled=!!s.compUnlimited;
+  $('c-provider').classList.toggle('on', d.providerOn);
+  $('c-guide').classList.toggle('on', s.guide==='yes');
+  var box=$('provideItems'), chosen=Array.isArray(s.provideItems)?s.provideItems:[];
+  var sig=d.provideOptions.join('|');
+  if(box.dataset.sig!==sig){
+    box.innerHTML=d.provideOptions.map(function(x){return '<label class="pill cb"><input type="checkbox" name="provideItems" data-group="1" value="'+esc(x)+'"'+(chosen.indexOf(x)>=0?' checked':'')+'><span>'+esc(x)+'</span></label>'}).join('');
+    box.dataset.sig=sig;
+  }
+}
+/* 지침 8번: 에버랜드(용인) 행사는 '동반인 1명 고정·이름 받음'이 기본. 마스터의 지난 행사 값으로 미리 채운다 (비어 있는 칸만). */
+function applyEverlandPreset(){
+  var v=function(id,val){ var el=$(id); if(!one(el.value)) el.value=val; };
+  var pick=function(name,val){ $$('input[name="'+name+'"]').forEach(function(r){ r.checked=(r.value===val); }); };
+  v('place','에버랜드 스피드웨이');
+  v('addr','경기 용인시 처인구 포곡읍 에버랜드로 199');
+  pick('plate','yes'); pick('carModel','yes');
+  pick('comp','yes'); $('compMax').value='1'; var cu=document.querySelector('input[name="compUnlimited"]'); if(cu) cu.checked=false; pick('compNames','yes');
+  pick('provider','yes'); v('providerName','에버랜드 스피드웨이');
+  render(); // 넘기는 항목 칸이 그려진 뒤 고른다
+  $$('#provideItems input').forEach(function(c){ if(['이름','차명','차량번호','동반인 이름'].indexOf(c.value)>=0) c.checked=true; });
+  render();
+}
+function render(){
+  var s=getState(); var d=derive(s);
+  refreshConditional(s,d);
+  s=getState(); d=derive(s);
+  var text=buildRequest(s,d);
+  $('preview').value=text;
+  autosize($('preview'));
+  var ck=buildChecks(s,d);
+  $('checks').innerHTML=ck.html;
+  $('btnCopy').disabled=ck.blocked;
+  save();
+  return {state:s, derived:d, text:text, blocked:ck.blocked};
+}
+function autosize(ta){ ta.style.height='auto'; ta.style.height=Math.min(Math.max(ta.scrollHeight+6,200),640)+'px'; }
+
+/* ---------- steps ---------- */
+function drawSteps(){
+  var nav=$('steps'); nav.innerHTML='';
+  STEP_NAMES.forEach(function(n,i){
+    var k=i+1;
+    var c=document.createElement('button'); c.type='button';
+    c.className='chip'+(k===cur?' cur':'')+(k<cur?' done':'');
+    c.innerHTML='<b>'+(k<cur?'✓':k)+'</b>'+esc(n);
+    c.addEventListener('click',function(){go(k)});
+    nav.appendChild(c);
+  });
+  $('bar').style.width=Math.round(cur/TOTAL*100)+'%';
+  $('btnPrev').disabled=(cur===1);
+  $('btnNext').textContent=(cur===TOTAL?'처음으로':(cur===TOTAL-1?'요청서 보기':'다음'));
+  var c2=nav.querySelector('.cur'); if(c2&&c2.scrollIntoView){ try{c2.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'})}catch(e){} }
+}
+/* 어느 단계든 자유롭게 오갈 수 있다. 필수 칸(성함·행사명·날짜)은 5번에서만 안내하고 복사 버튼을 잠근다. */
+function go(k){
+  if(k<1||k>TOTAL) return;
+  cur=k;
+  $$('section.step').forEach(function(sec){ sec.classList.toggle('active', +sec.dataset.step===cur); });
+  drawSteps(); render();
+  try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+  try{ localStorage.setItem(KEY+'.step', String(cur)); }catch(e){}
+}
+
+/* ---------- copy / io ---------- */
+function copyText(text, btn, okMsg){
+  var done=function(ok){
+    if(!btn) return;
+    var old=btn.dataset.label||btn.textContent; btn.dataset.label=old;
+    btn.textContent= ok?(okMsg||'복사됨'):'길게 눌러 직접 복사';
+    btn.classList.toggle('copied',ok);
+    setTimeout(function(){btn.textContent=old; btn.classList.remove('copied')},2000);
+  };
+  function fallback(){
+    try{
+      var ta=document.createElement('textarea'); ta.value=text; ta.setAttribute('readonly','');
+      ta.style.position='fixed'; ta.style.top='-1000px'; document.body.appendChild(ta);
+      ta.select(); ta.setSelectionRange(0, text.length);
+      var ok=document.execCommand('copy'); document.body.removeChild(ta); done(ok);
+    }catch(e){ done(false); }
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){done(true)},function(){fallback()});
+  } else fallback();
+}
+function ioSay(msg, bad){ var n=$('ioNote'); n.textContent=msg||''; n.style.color=bad?'var(--bad)':'var(--ok)'; }
+function importText(text){
+  try{
+    var t=String(text||'').trim(), obj=null;
+    try{ obj=JSON.parse(t); }catch(e){
+      var i=t.lastIndexOf('{"v":'); if(i<0) i=t.lastIndexOf('{');
+      obj=JSON.parse(t.slice(i));
+    }
+    var ans=obj&&obj.answers?obj.answers:obj;
+    if(!ans||typeof ans!=='object'||Array.isArray(ans)) throw new Error('x');
+    setState(ans); render(); setState(ans); render(); // 두 번: 조건부 칸이 다시 그려진 뒤 값 반영
+    $('ioBox').classList.remove('on'); $('ioText').value='';
+    ioSay('요청서를 불러왔습니다. 1번부터 확인해 보시면 됩니다.');
+    go(1);
+  }catch(e){ ioSay('불러오지 못했습니다. "요청서 복사"로 만든 글 전체(끝의 [자료] 줄 포함)를 붙여 넣으셨는지 한 번 봐 주세요.', true); }
+}
+function resetForm(){
+  $$('input,textarea').forEach(function(el){
+    if(el.type==='radio'||el.type==='checkbox') el.checked=el.defaultChecked;
+    else if(el.type!=='button') el.value=el.defaultValue;
+  });
+  $('provideItems').innerHTML=''; $('provideItems').dataset.sig='';
+  $('ioBox').classList.remove('on'); ioSay('');
+  try{ localStorage.removeItem(KEY); localStorage.removeItem(KEY+'.step'); }catch(e){}
+  go(1); render();
+}
+/* 두 번 눌러 확정 (웹뷰·내장 보기에서는 확인창이 안 뜨므로 페이지 안에서 확인) */
+function twoTap(btn, armedLabel, fn){
+  if(btn.dataset.armed==='1'){ clearTimeout(btn._t); btn.dataset.armed=''; btn.textContent=btn.dataset.label; fn(); return; }
+  if(!btn.dataset.label) btn.dataset.label=btn.textContent;
+  btn.dataset.armed='1'; btn.textContent=armedLabel;
+  clearTimeout(btn._t); btn._t=setTimeout(function(){ btn.dataset.armed=''; btn.textContent=btn.dataset.label; },4000);
+}
+
+/* ---------- 주소 검색 (카카오 우편번호 서비스, 키 불필요) ---------- */
+var POSTCODE_SRC='https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+var postcodeLoading=null;
+function loadPostcode(){
+  if(window.kakao && window.kakao.Postcode) return Promise.resolve();
+  if(postcodeLoading) return postcodeLoading;
+  postcodeLoading=new Promise(function(res,rej){
+    var sc=document.createElement('script'); sc.src=POSTCODE_SRC; sc.async=true;
+    sc.onload=function(){ (window.kakao&&window.kakao.Postcode)?res():rej(new Error('no kakao.Postcode')); };
+    sc.onerror=function(){ postcodeLoading=null; rej(new Error('load fail')); };
+    document.head.appendChild(sc);
+  });
+  return postcodeLoading;
+}
+function addrPicked(data){
+  var road=data.roadAddress||data.autoRoadAddress||'';
+  var addr=road||data.jibunAddress||data.autoJibunAddress||data.address||'';
+  var bld=one(data.buildingName), pl=one($('place').value);
+  if(bld && !pl){ $('place').value=bld; }
+  else if(bld && road && pl!==bld){ addr+=' ('+bld+')'; }
+  $('addr').value=addr;
+  $('addrLayer').classList.remove('on'); $('addrBox').innerHTML='';
+  render(); $('addrDetail').focus();
+}
+function addrFail(){
+  var note=$('addrNote');
+  note.textContent='주소 검색창을 불러오지 못했습니다(인터넷 연결을 한 번 봐 주세요). 주소를 직접 적어 주셔도 됩니다.';
+  note.style.color='var(--bad)';
+}
+/* 주소 칸에 적은 글을 검색어로 새 창을 띄운다. 고르면 창이 닫히고(autoClose) 주소가 들어온다. */
+function openAddr(){
+  var btn=$('btnAddr'), q=one($('addr').value).slice(0,60);
+  btn.disabled=true; btn.textContent='여는 중';
+  loadPostcode().then(function(){
+    new window.kakao.Postcode({ width:500, height:600, oncomplete:addrPicked })
+      .open({ q:q, popupTitle:'주소 검색', popupKey:'pckAddr', autoClose:true });
+  }).catch(addrFail).then(function(){ btn.disabled=false; btn.textContent='주소 검색'; });
+}
+/* 새 창이 막힌 환경용: 같은 검색어로 페이지 안에 끼워 넣는다. */
+function openAddrInline(){
+  var layer=$('addrLayer'), box=$('addrBox'), q=one($('addr').value);
+  loadPostcode().then(function(){
+    box.innerHTML=''; layer.classList.add('on');
+    new window.kakao.Postcode({
+      width:'100%', height:'100%', oncomplete:addrPicked,
+      onresize:function(size){ if(size&&size.height) box.style.height=size.height+'px'; }
+    }).embed(box, { q:q, autoClose:true });
+    try{ box.scrollIntoView({block:'nearest',behavior:'smooth'}); }catch(e){}
+  }).catch(addrFail);
+}
+
+/* ---------- init ---------- */
+function init(){
+  if(init.done) return; init.done=true;
+  var saved=load();
+  if(saved) setState(saved);
+  try{ var st=+localStorage.getItem(KEY+'.step'); if(st>=1&&st<=TOTAL) cur=st; }catch(e){}
+  $$('section.step').forEach(function(sec){ sec.classList.toggle('active', +sec.dataset.step===cur); });
+  drawSteps(); render();
+  if(saved){ setState(saved); render(); }
+
+  document.addEventListener('input', function(e){ if(e.target && e.target.name) render(); });
+  document.addEventListener('change', function(e){
+    if(!(e.target && e.target.name)) return;
+    if(e.target.name==='everland' && e.target.value==='yes' && e.target.checked){ applyEverlandPreset(); return; }
+    render();
+  });
+  $('btnPrev').addEventListener('click',function(){go(cur-1)});
+  $('btnNext').addEventListener('click',function(){ go(cur===TOTAL?1:cur+1) });
+  $('btnCopy').addEventListener('click',function(){ var r=render(); if(r.blocked) return; copyText(r.text, this, '복사되었습니다'); });
+  $('btnImport').addEventListener('click',function(){ var b=$('ioBox'); b.classList.toggle('on'); if(b.classList.contains('on')) $('ioText').focus(); });
+  $('btnImportGo').addEventListener('click',function(){ importText($('ioText').value); });
+  $('btnReset').addEventListener('click',function(){ twoTap(this,'모든 답이 지워집니다 — 한 번 더 누르시면 실행',resetForm); });
+  $('btnResetTop').addEventListener('click',function(){ twoTap(this,'모든 답이 지워집니다 — 한 번 더 누르시면 실행',resetForm); });
+  $('btnAddr').addEventListener('click',openAddr);
+  $('btnAddrInline').addEventListener('click',openAddrInline);
+  $('btnAddrClose').addEventListener('click',function(){ $('addrLayer').classList.remove('on'); $('addrBox').innerHTML=''; });
+}
+document.addEventListener('DOMContentLoaded', init);
+window.PCK={getState:getState,setState:setState,render:render,go:go,derive:derive};
+})();
+</script>
+</body>
+</html>
