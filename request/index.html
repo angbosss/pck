@@ -50,7 +50,8 @@ h2{font-size:19px; font-weight:800; letter-spacing:-.015em; margin:0 0 4px}
 .f{margin:0 0 18px}
 .f:last-child{margin-bottom:0}
 .t{display:block; font-size:15px; font-weight:700; color:var(--ink); margin:0 0 6px}
-.t .req{color:var(--bad); font-weight:800; margin-left:2px}
+.t.must{font-weight:800; color:#0b1220}
+.t .req{color:var(--bad); font-weight:800; font-size:17px; margin-left:3px}
 .t .opt{font-weight:500; color:var(--ink3); font-size:13px; margin-left:6px}
 .h{font-size:13.5px; color:var(--ink3); margin:6px 0 0; line-height:1.5}
 input[type=text],input[type=email],input[type=number],input[type=date],input[type=time],input[type=datetime-local],textarea{
@@ -124,17 +125,17 @@ input[readonly],textarea[readonly]{background:#f9fafb; color:var(--ink2)}
       <p class="sub">회원 공지와 신청 페이지 첫머리에 그대로 들어가는 내용입니다.</p>
 
       <div class="f">
-        <label class="t" for="requester">요청해 주시는 분 성함<span class="req">*</span></label>
+        <label class="t must" for="requester">요청해 주시는 분 성함<span class="req">*</span></label>
         <input type="text" id="requester" name="requester" placeholder="예: 홍길동" autocomplete="off">
       </div>
 
       <div class="f">
-        <label class="t" for="eventName">행사명<span class="req">*</span></label>
+        <label class="t must" for="eventName">행사명<span class="req">*</span></label>
         <input type="text" id="eventName" name="eventName" placeholder="예: ○○ 서킷 클럽데이 (트랙 체험)" autocomplete="off">
       </div>
 
       <div class="f">
-        <label class="t" for="eventDate">행사 날짜<span class="req">*</span></label>
+        <label class="t must" for="eventDate">행사 날짜<span class="req">*</span></label>
         <input type="date" id="eventDate" name="eventDate">
       </div>
 
@@ -307,9 +308,9 @@ input[readonly],textarea[readonly]{background:#f9fafb; color:var(--ink2)}
             <input type="text" id="providerName" name="providerName" placeholder="예: ○○ 서킷 운영팀">
           </div>
           <div class="f">
-            <label class="t" for="providerEmail">명단을 받으실 분 이메일</label>
-            <input type="email" id="providerEmail" name="providerEmail" inputmode="email" autocapitalize="off" autocomplete="off" placeholder="예: name@example.com">
-            <p class="h">정해진 시한에 이 주소로 명단(엑셀 파일)이 보내집니다. 받으실 분께 미리 말씀해 두시면 좋습니다.</p>
+            <label class="t must" for="providerEmail">명단을 받으실 분 이메일<span class="req">*</span></label>
+            <input type="email" id="providerEmail" name="providerEmail" inputmode="email" autocapitalize="off" autocomplete="off" aria-required="true" placeholder="예: name@example.com">
+            <p class="h">명단을 보내는 행사는 꼭 필요합니다. 정해진 시한에 이 주소로 명단(엑셀 파일)이 보내집니다. 받으실 분께 미리 말씀해 두시면 좋습니다.</p>
           </div>
           <div class="f">
             <label class="t" for="providerContact">받으실 분 성함·직함<span class="opt">선택</span></label>
@@ -414,8 +415,9 @@ var STEP_NAMES=['행사','인원·마감','받을 것','주최 측·안내문','
 var TOTAL=STEP_NAMES.length;
 var KEY='pckEventRequest.v1';
 /* ---- 버전. 페이지를 고칠 때마다 VERSION을 올리고 CHANGELOG 맨 앞에 한 줄 보탠다. 마스터·요청서 시트 '버전로그' 탭에도 같은 줄을 적는다. ---- */
-var VERSION='3.4';
+var VERSION='3.5';
 var CHANGELOG=[
+  ['3.5','2026-11-04','명단을 보내는 행사는 받으실 분 이메일이 필수 — 빨간 별표, 비어 있거나 형식이 틀리면 보내기 잠김. 필수 칸 제목을 조금 더 진하게'],
   ['3.4','2026-11-04','이메일 칸이 작게 그려지던 것 — 다른 입력칸과 같은 크기로(실제 주소에서 발견)'],
   ['3.3','2026-11-04','4번에 명단 받으실 분 이메일·성함, 운영진 참조 이메일 칸 — 시한에 맞춰 명단(엑셀)이 그 주소로 자동 발송되는 구조 준비. 정리글에 받는 곳 표시'],
   ['3.2','2026-11-03','정리글의 마감 줄을 "미정"으로만 — 복사해 보내던 때의 설명("안세환이 정해 안내") 제거'],
@@ -546,8 +548,8 @@ function buildChecks(s,d){
   if(s.waitlist==='yes' && !(s.cap&&+s.cap>0)) info.push('정원이 없으면 대기는 생기지 않습니다.');
   if(d.compOn && !s.compUnlimited && !(s.compMax&&+s.compMax>0)) warn.push('동반인 최대 인원이 비어 있습니다. 숫자를 적어 주시거나 제한 없음을 골라 주세요.');
   if(d.providerOn && !one(s.providerName)) warn.push('명단을 보낼 곳이 비어 있습니다.');
-  if(d.providerOn && !one(s.providerEmail)) warn.push('명단을 받으실 분 이메일이 비어 있습니다. 비어 있으면 명단을 자동으로 보낼 수 없어 따로 여쭙게 됩니다.');
-  if(d.providerOn && one(s.providerEmail) && !isEmail(one(s.providerEmail))) warn.push('받으실 분 이메일 형식이 맞지 않는 것 같습니다. 한 번 봐 주세요.');
+  if(d.providerOn && !one(s.providerEmail)) bad.push('4번 명단을 받으실 분 이메일이 아직 비어 있습니다. 명단을 보내는 행사는 꼭 필요합니다.');
+  if(d.providerOn && one(s.providerEmail) && !isEmail(one(s.providerEmail))) bad.push('4번 받으실 분 이메일 형식이 맞지 않습니다. 한 번 봐 주세요.');
   if(one(s.provideCc) && !isEmail(one(s.provideCc))) warn.push('운영진 참조 이메일 형식이 맞지 않는 것 같습니다. 한 번 봐 주세요.');
   if(d.providerOn && !d.provideItems.length) warn.push('주최 측에서 요청하는 항목이 비어 있습니다. 필요한 항목이 목록에 없으면 3번에서 받기로 바꿔 주시면 됩니다.');
   if(d.providerOn && s.provideBy && s.eventDate && parseDate(s.provideBy)>parseDate(s.eventDate+'T23:59')) warn.push('명단 시한이 행사 날짜보다 뒤로 되어 있습니다. 맞는지 한 번 봐 주세요.');
@@ -626,7 +628,7 @@ function drawSteps(){
   $('btnNext').textContent=(cur===TOTAL?'처음으로':(cur===TOTAL-1?'요청서 보기':'다음'));
   var c2=nav.querySelector('.cur'); if(c2&&c2.scrollIntoView){ try{c2.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'})}catch(e){} }
 }
-/* 어느 단계든 자유롭게 오갈 수 있다. 필수 칸(성함·행사명·날짜)은 5번에서만 안내하고 복사 버튼을 잠근다. */
+/* 어느 단계든 자유롭게 오갈 수 있다. 필수 칸(성함·행사명·날짜, 명단을 보내는 행사면 받으실 분 이메일)은 5번에서만 안내하고 보내기·복사 버튼을 잠근다. */
 function go(k){
   if(k<1||k>TOTAL) return;
   cur=k;
