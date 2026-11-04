@@ -53,7 +53,7 @@ h2{font-size:19px; font-weight:800; letter-spacing:-.015em; margin:0 0 4px}
 .t .req{color:var(--bad); font-weight:800; margin-left:2px}
 .t .opt{font-weight:500; color:var(--ink3); font-size:13px; margin-left:6px}
 .h{font-size:13.5px; color:var(--ink3); margin:6px 0 0; line-height:1.5}
-input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],textarea{
+input[type=text],input[type=email],input[type=number],input[type=date],input[type=time],input[type=datetime-local],textarea{
   width:100%; min-height:48px; padding:11px 14px; font:inherit; font-size:16px; color:var(--ink);
   background:#fff; border:1px solid var(--line2); border-radius:10px; outline:none; -webkit-appearance:none; appearance:none;
 }
@@ -414,8 +414,9 @@ var STEP_NAMES=['행사','인원·마감','받을 것','주최 측·안내문','
 var TOTAL=STEP_NAMES.length;
 var KEY='pckEventRequest.v1';
 /* ---- 버전. 페이지를 고칠 때마다 VERSION을 올리고 CHANGELOG 맨 앞에 한 줄 보탠다. 마스터·요청서 시트 '버전로그' 탭에도 같은 줄을 적는다. ---- */
-var VERSION='3.3';
+var VERSION='3.4';
 var CHANGELOG=[
+  ['3.4','2026-11-04','이메일 칸이 작게 그려지던 것 — 다른 입력칸과 같은 크기로(실제 주소에서 발견)'],
   ['3.3','2026-11-04','4번에 명단 받으실 분 이메일·성함, 운영진 참조 이메일 칸 — 시한에 맞춰 명단(엑셀)이 그 주소로 자동 발송되는 구조 준비. 정리글에 받는 곳 표시'],
   ['3.2','2026-11-03','정리글의 마감 줄을 "미정"으로만 — 복사해 보내던 때의 설명("안세환이 정해 안내") 제거'],
   ['3.1','2026-11-03','요청서 보내기 버튼 — 누르면 접수함(구글 시트)으로 바로 들어가고 접수번호가 보임. 요청서 복사는 예비로 남김. 페이지에 버전 표시·변경 내역 추가'],
