@@ -307,14 +307,29 @@ input[readonly],textarea[readonly]{background:#f9fafb; color:var(--ink2)}
             <input type="text" id="providerName" name="providerName" placeholder="예: ○○ 서킷 운영팀">
           </div>
           <div class="f">
+            <label class="t" for="providerEmail">명단을 받으실 분 이메일</label>
+            <input type="email" id="providerEmail" name="providerEmail" inputmode="email" autocapitalize="off" autocomplete="off" placeholder="예: name@example.com">
+            <p class="h">정해진 시한에 이 주소로 명단(엑셀 파일)이 보내집니다. 받으실 분께 미리 말씀해 두시면 좋습니다.</p>
+          </div>
+          <div class="f">
+            <label class="t" for="providerContact">받으실 분 성함·직함<span class="opt">선택</span></label>
+            <input type="text" id="providerContact" name="providerContact" placeholder="예: 김○○ 매니저">
+            <p class="h">메일 첫 줄 인사에 들어갑니다.</p>
+          </div>
+          <div class="f">
             <span class="t">주최 측에서 요청하는 항목</span>
             <div class="pills" id="provideItems"></div>
             <p class="h" id="provideHint">3번에서 받기로 한 항목 중에서 고르실 수 있습니다. 필요한 항목이 보이지 않으면 3번에서 '예'로 바꿔 주시면 됩니다. 휴대폰·회원번호는 클럽 내부용이라 밖으로 보내지 않습니다.</p>
           </div>
           <div class="f">
-            <label class="t" for="provideBy">명단을 보내야 하는 시한<span class="opt">선택</span></label>
+            <label class="t" for="provideBy">명단을 보내는 시한<span class="opt">선택</span></label>
             <input type="datetime-local" id="provideBy" name="provideBy">
-            <p class="h">이 시한을 기준으로 취소 마감(픽스일)을 정합니다.</p>
+            <p class="h">이 시한에 맞춰 명단이 보내지고, 취소 마감(픽스일)도 이 시한을 기준으로 정합니다.</p>
+          </div>
+          <div class="f">
+            <label class="t" for="provideCc">같은 메일을 받아 보실 운영진 이메일<span class="opt">선택</span></label>
+            <input type="email" id="provideCc" name="provideCc" inputmode="email" autocapitalize="off" autocomplete="off" placeholder="예: me@example.com">
+            <p class="h">보낸 명단을 함께 받아 두고 싶으시면 적어 주세요.</p>
           </div>
         </div>
       </div>
@@ -399,8 +414,9 @@ var STEP_NAMES=['행사','인원·마감','받을 것','주최 측·안내문','
 var TOTAL=STEP_NAMES.length;
 var KEY='pckEventRequest.v1';
 /* ---- 버전. 페이지를 고칠 때마다 VERSION을 올리고 CHANGELOG 맨 앞에 한 줄 보탠다. 마스터·요청서 시트 '버전로그' 탭에도 같은 줄을 적는다. ---- */
-var VERSION='3.2';
+var VERSION='3.3';
 var CHANGELOG=[
+  ['3.3','2026-11-04','4번에 명단 받으실 분 이메일·성함, 운영진 참조 이메일 칸 — 시한에 맞춰 명단(엑셀)이 그 주소로 자동 발송되는 구조 준비. 정리글에 받는 곳 표시'],
   ['3.2','2026-11-03','정리글의 마감 줄을 "미정"으로만 — 복사해 보내던 때의 설명("안세환이 정해 안내") 제거'],
   ['3.1','2026-11-03','요청서 보내기 버튼 — 누르면 접수함(구글 시트)으로 바로 들어가고 접수번호가 보임. 요청서 복사는 예비로 남김. 페이지에 버전 표시·변경 내역 추가'],
   ['3.0','2026-11-03','상세 주소 칸 제거(장소명·주소만). 주소 검색은 적은 글을 검색어로 새 창'],
@@ -426,6 +442,7 @@ function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate
 function fmtD(v){var d=parseDate(v); if(!d) return ''; return ymd(d)+'('+DAYS[d.getDay()]+')'}
 function fmtDT(v){var d=parseDate(v); if(!d) return ''; return fmtD(v)+' '+pad(d.getHours())+':'+pad(d.getMinutes())}
 function one(s){return String(s==null?'':s).replace(/\r?\n+/g,' ').trim()}
+function isEmail(s){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s||''))}
 function lines(s){return String(s||'').split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
@@ -505,7 +522,8 @@ function buildRequest(s,d){
   L.push('받을 것: '+items);
   if(d.compOn && lines(s.compRules).length) L.push('동반인 조건: '+lines(s.compRules).join(' / '));
   if(d.providerOn){
-    L.push('주최 측 명단: '+(one(s.providerName)||'(어디인지 비움)')+' — '+(d.provideItems.length?d.provideItems.join('·'):'(항목 비움)')+(s.provideBy?', '+fmtDT(s.provideBy)+'까지':', 시한 미정'));
+    var to=one(s.providerEmail)?(one(s.providerEmail)+(one(s.providerContact)?' ('+one(s.providerContact)+')':'')):'(이메일 비움)';
+    L.push('주최 측 명단: '+(one(s.providerName)||'(어디인지 비움)')+' — '+(d.provideItems.length?d.provideItems.join('·'):'(항목 비움)')+(s.provideBy?', '+fmtDT(s.provideBy)+'까지':', 시한 미정')+' → '+to+(one(s.provideCc)?', 운영진 참조 '+one(s.provideCc):''));
   } else L.push('주최 측 명단: 넘기지 않음');
   L.push('안내문: '+(s.guide==='yes'?('있음'+(one(s.guideNote)?' — '+one(s.guideNote):'')+' (파일 따로 보냄)'):'없음'));
   if(lines(s.memo).length) L.push('추가 요청: '+lines(s.memo).join(' / '));
@@ -527,6 +545,9 @@ function buildChecks(s,d){
   if(s.waitlist==='yes' && !(s.cap&&+s.cap>0)) info.push('정원이 없으면 대기는 생기지 않습니다.');
   if(d.compOn && !s.compUnlimited && !(s.compMax&&+s.compMax>0)) warn.push('동반인 최대 인원이 비어 있습니다. 숫자를 적어 주시거나 제한 없음을 골라 주세요.');
   if(d.providerOn && !one(s.providerName)) warn.push('명단을 보낼 곳이 비어 있습니다.');
+  if(d.providerOn && !one(s.providerEmail)) warn.push('명단을 받으실 분 이메일이 비어 있습니다. 비어 있으면 명단을 자동으로 보낼 수 없어 따로 여쭙게 됩니다.');
+  if(d.providerOn && one(s.providerEmail) && !isEmail(one(s.providerEmail))) warn.push('받으실 분 이메일 형식이 맞지 않는 것 같습니다. 한 번 봐 주세요.');
+  if(one(s.provideCc) && !isEmail(one(s.provideCc))) warn.push('운영진 참조 이메일 형식이 맞지 않는 것 같습니다. 한 번 봐 주세요.');
   if(d.providerOn && !d.provideItems.length) warn.push('주최 측에서 요청하는 항목이 비어 있습니다. 필요한 항목이 목록에 없으면 3번에서 받기로 바꿔 주시면 됩니다.');
   if(d.providerOn && s.provideBy && s.eventDate && parseDate(s.provideBy)>parseDate(s.eventDate+'T23:59')) warn.push('명단 시한이 행사 날짜보다 뒤로 되어 있습니다. 맞는지 한 번 봐 주세요.');
   if(d.providerOn && !s.provideBy) info.push('명단 시한이 없으면 취소 마감(픽스일)은 제가 정해 말씀드리겠습니다.');
