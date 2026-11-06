@@ -359,7 +359,7 @@ input[readonly],textarea[readonly]{background:#f9fafb; color:var(--ink2)}
       <p class="sub">앞에서 여쭙지 못한 것은 여기에 자유롭게 적어 주세요. 그다음 아래 '요청서 복사'를 눌러 주시면 됩니다.</p>
       <div class="f">
         <label class="t" for="memo">추가 요청·바라는 점<span class="opt">선택</span></label>
-        <textarea id="memo" name="memo" style="min-height:130px" placeholder="무엇이든 편하게 적어 주세요. 예:&#10;· 신청서에 더 받고 싶은 것 (예: 참가자 혈액형)&#10;· 신청 페이지에 넣을 안내 문구&#10;· 공지 올릴 시점, 명단을 보내 줄 사람&#10;· 지난 행사와 다르게 하고 싶은 점"></textarea>
+        <textarea id="memo" name="memo" style="min-height:130px" placeholder="무엇이든 편하게 적어 주세요. 예:&#10;· 신청서에 더 받고 싶은 것 (예: 점심 도시락 필요 여부)&#10;· 신청 페이지에 넣을 안내 문구&#10;· 공지 올릴 시점, 명단을 보내 줄 사람&#10;· 지난 행사와 다르게 하고 싶은 점"></textarea>
         <p class="h">적어 주신 내용은 신청 페이지와 접수 방식에 반영됩니다.</p>
       </div>
       <div id="checks"></div>
@@ -415,8 +415,9 @@ var STEP_NAMES=['행사','인원·마감','받을 것','주최 측·안내문','
 var TOTAL=STEP_NAMES.length;
 var KEY='pckEventRequest.v1';
 /* ---- 버전. 페이지를 고칠 때마다 VERSION을 올리고 CHANGELOG 맨 앞에 한 줄 보탠다. 마스터·요청서 시트 '버전로그' 탭에도 같은 줄을 적는다. ---- */
-var VERSION='3.6';
+var VERSION='3.7';
 var CHANGELOG=[
+  ['3.7','2026-11-06','보낸 뒤 이 기기에 저장해 둔 입력 내용(담당자 성함·이메일 포함)을 지움, 추가 요청 예시를 개인정보가 아닌 것으로 바꿈 (보안 점검)'],
   ['3.6','2026-11-06','머리글을 실제 흐름에 맞춤 — 보내기를 누를 때만 접수함으로 들어감, 담당자 성함·이메일은 명단 발송에만 쓰고 행사 뒤 지움 (보안 점검)'],
   ['3.5','2026-11-04','명단을 보내는 행사는 받으실 분 이메일이 필수 — 빨간 별표, 비어 있거나 형식이 틀리면 보내기 잠김. 필수 칸 제목을 조금 더 진하게'],
   ['3.4','2026-11-04','이메일 칸이 작게 그려지던 것 — 다른 입력칸과 같은 크기로(실제 주소에서 발견)'],
@@ -474,7 +475,8 @@ function setState(s){
     else el.value=(v==null?'':v);
   });
 }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(getState())); }catch(e){} }
+var savePaused=false;   // 보낸 직후에는 저장하지 않음. 다시 입력하면 저장이 다시 켜진다 (3.7)
+function save(){ if(savePaused) return; try{ localStorage.setItem(KEY, JSON.stringify(getState())); }catch(e){} }
 function load(){ try{ var raw=localStorage.getItem(KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; } }
 
 /* ---------- derived ---------- */
@@ -766,6 +768,9 @@ function sendRequest(btn){
       if(o && o.ok){
         sendResult('<b>접수되었습니다.</b> 접수번호 <b>'+esc(String(o.no))+'</b> · '+esc(String(o.at||''))+'<br>안세환에게 알림이 갔습니다. 수정할 내용이 생기면 고쳐서 다시 보내 주시면 됩니다(새 번호로 접수).','ok');
         try{ localStorage.setItem(KEY+'.lastSent', JSON.stringify({no:o.no, at:o.at, event:one(s.eventName)})); }catch(e){}
+        // 보낸 뒤에는 이 기기에 저장해 둔 입력 내용(담당자 성함·이메일 포함)을 지운다. 접수번호만 남김 (보안 점검 2026-11-06)
+        try{ localStorage.removeItem(KEY); localStorage.removeItem(KEY+'.step'); }catch(e){}
+        savePaused=true;
       } else {
         sendResult('보내지 못했습니다'+(o&&o.error?': '+esc(o.error):'')+'. 아래 \'요청서 복사\'로 보내 주셔도 됩니다.','bad');
       }
@@ -789,9 +794,10 @@ function init(){
   drawSteps(); render();
   if(saved){ setState(saved); render(); }
 
-  document.addEventListener('input', function(e){ if(e.target && e.target.name) render(); });
+  document.addEventListener('input', function(e){ if(e.target && e.target.name){ savePaused=false; render(); } });
   document.addEventListener('change', function(e){
     if(!(e.target && e.target.name)) return;
+    savePaused=false;
     if(e.target.name==='everland' && e.target.value==='yes' && e.target.checked){ applyEverlandPreset(); return; }
     render();
   });
